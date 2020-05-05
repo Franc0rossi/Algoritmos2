@@ -34,7 +34,7 @@ void flotar(int pos){
             flotar(posPadre);
         }
         else if(heap[pos]->distanciaOrigen == heap[posPadre]->distanciaOrigen){
-            if(heap[pos]->elem == heap[posPadre]->elem){
+            if(heap[pos]->elem < heap[posPadre]->elem){
                 swapNodos(pos, posPadre);
                 flotar(posPadre);
             }
@@ -63,7 +63,8 @@ int posMinimo(int posHijoIzq, int posHijoDer){
 void hundir(int pos){
     int posHijoIzq = hIzq(pos);
     int posHijoDer = hDer(pos);
-    if(heap[posHijoIzq]!= NULL && heap[posHijoDer]!=NULL){
+    //para que sea hoja basta con saber que el izquierdo sea distinto de null
+    if(heap[posHijoIzq]!= NULL){
         if(heap[posHijoDer]==NULL){
             if(heap[pos]->distanciaOrigen > heap[posHijoIzq]->distanciaOrigen){
                 swapNodos(pos, posHijoIzq);
@@ -149,7 +150,8 @@ int main(){
 
     }
 
-    for(int i = 1; i < cantVertices; i++){
+    //AGREGO EN EL HEAP TODOS LOS VERTICES DE INCIDENCIA CERO
+    for(int i = 1; i <= cantVertices; i++){
         if(vecIncidentes[i] == 0){
             add(0,i);
         }
@@ -179,8 +181,11 @@ int main(){
         removeMin();
         cout << minimoHeap->elem << endl;
         NodoAdy* ady = listaAdy[minimoHeap->elem];
-        while(ady!=NULL){
-            add(minimoHeap->distanciaOrigen + 1, ady->dato);
+        while(ady!=NULL){//Debo fijarme que el vertice en incidentes al pararme en el sea cero, con esto me aseguro que es el proximo en agregar al heap
+            vecIncidentes[ady->dato]--;
+            if(vecIncidentes[ady->dato]==0){
+                 add(minimoHeap->distanciaOrigen + 1, ady->dato);
+            }
             ady = ady->sig;
         }
     }
