@@ -40,7 +40,6 @@ void flotar(int pos){
             }
         }
     }
-
 }
 
 int posMinimo(int posHijoIzq, int posHijoDer){
@@ -175,13 +174,13 @@ int main(){
     }
     */
     
-    //SOSPECHAMOS QUE ACA ESTA EL ERROR
     while(tope!=0){
         Nodo* minimoHeap = getMin();
         removeMin();
         cout << minimoHeap->elem << endl;
         NodoAdy* ady = listaAdy[minimoHeap->elem];
-        while(ady!=NULL){//Debo fijarme que el vertice en incidentes al pararme en el sea cero, con esto me aseguro que es el proximo en agregar al heap
+        while(ady!=NULL){
+            //Debo fijarme que el vertice en incidentes al pararme en el sea cero, con esto me aseguro que es el proximo en agregar al heap
             vecIncidentes[ady->dato]--;
             if(vecIncidentes[ady->dato]==0){
                  add(minimoHeap->distanciaOrigen + 1, ady->dato);
@@ -196,7 +195,6 @@ int main(){
 
 
 /*
-
 input
 10
 20
@@ -232,6 +230,4 @@ output
 5
 4
 6
-
-
 */
