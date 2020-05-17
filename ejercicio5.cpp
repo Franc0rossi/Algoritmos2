@@ -8,10 +8,17 @@ struct Nodo
 	int costo;
 };
 
+struct NodoAdy{
+    int dato;
+    int costo;
+    NodoAdy *sig;
+};
+
+
 Nodo **heap;
 int tope = 0;
 
-int** matAdy;
+NodoAdy** listaAdy;
 
 int posicionPadre(int pos)
 {
@@ -33,7 +40,7 @@ int posMinimo(int posHijoIzq, int posHijoDer){
         return posHijoIzq;
     }
     else{
-        if(heap[posHijoIzq]->elem > heap[posHijoDer]->elem){
+        if(heap[posHijoIzq]->costo > heap[posHijoDer]->costo){
             return posHijoDer;
         }
         else{
@@ -52,7 +59,7 @@ void flotar(int pos){
     int posPadre = pos/2;
     if(pos > 1){
         if(heap[pos] != NULL && heap[posPadre] != NULL){
-            if(heap[pos]->elem < heap[posPadre]->elem){
+            if(heap[pos]->costo < heap[posPadre]->costo){
                 swapNodos(pos, posPadre);
                 flotar(posPadre);
             }
@@ -82,7 +89,7 @@ void hundir(int pos)
 
 		if (heap[posMinimoHijo] != NULL && heap[pos] != NULL)
 		{
-			if (heap[posMinimoHijo]->elem < heap[pos]->elem)
+			if (heap[posMinimoHijo]->costo < heap[pos]->costo)
 			{
 				swapNodos(posMinimoHijo, pos);
 				hundir(posMinimoHijo);
@@ -110,7 +117,7 @@ void removeMin()
 }
 
 void vaciarHeap(int cantVertices){
-  for(int i = 1; i <= cantVertices; i++){
+  for(int i = 0; i <= cantVertices; i++){
     heap[i] = NULL;
   }
 }
@@ -127,82 +134,83 @@ void imprimirCosto(int* costo, int cantVertices){
   }
 }
 
-void caminoMasCorto(int** grafo, int origen, int cantVertices){
-  int *costo = new int[cantVertices];
-  int *ant = new int[cantVertices];
-  bool *vis = new bool[cantVertices];
-  for(int i = 0; i < cantVertices; i++){
+void caminoMasCorto(NodoAdy** listaAdy, int nodoOrigen, int cantidadDeVertices){
+  int *costo = new int[cantidadDeVertices + 1];
+  int *ant = new int[cantidadDeVertices + 1];
+  bool *vis = new bool[cantidadDeVertices + 1];
+  for(int i = 0; i < cantidadDeVertices + 1; i++){
     costo[i] = INF;
     ant[i] = -1;
     vis[i] = false;
   }
-  costo[origen] = 0;
+  costo[nodoOrigen] = 0;
   Nodo* nuevo = new Nodo;
-  nuevo->elem = origen;
+  nuevo->elem = nodoOrigen;
   nuevo->costo = 0;
   add(nuevo);
   while(tope>0){
     Nodo* minimo = getMin();
     removeMin();
     vis[minimo->elem] = true;
-    for(int i = 1; i<= cantVertices; i++){
-      if(matAdy[minimo->elem][i]!=INF && !vis[i]){
-        if(costo[i]>costo[minimo->elem] + matAdy[minimo->elem][i]){
-          costo[i] = costo[minimo->elem] + matAdy[minimo->elem][i];
-          ant[i] = minimo->elem;
-          Nodo* agrego = new Nodo;
-          agrego->elem = matAdy[minimo->elem][i];
-          agrego->costo = costo[minimo->elem] + matAdy[minimo->elem][i];
-          add(agrego);
+    NodoAdy* adyacentes = listaAdy[minimo->elem];
+    while(adyacentes != NULL){
+      if(!vis[adyacentes->dato]){
+        if(costo[adyacentes->dato]>costo[minimo->elem] + adyacentes->costo){
+			costo[adyacentes->dato] = costo[minimo->elem] + adyacentes->costo;
+			ant[adyacentes->dato] = minimo->elem;
+			Nodo* agrego = new Nodo;
+			agrego->elem = adyacentes->dato;
+			agrego->costo = costo[minimo->elem] + adyacentes->costo;
+			add(agrego);
         }
       }
+      adyacentes = adyacentes->sig;
     }
+    
   }
-
-  imprimirCosto(costo, cantVertices);
-
+  imprimirCosto(costo, cantidadDeVertices);
+    
 }
 
 int main(){
 
-int cantVertices;
-cin>>cantVertices;
+  int cantVertices;
+  cin>>cantVertices;
 
-int cantAristas;
-cin>>cantAristas;
+  int cantAristas;
+  cin>>cantAristas;
 
-heap = new Nodo*[cantVertices + 1];
-for(int i = 1; i<= cantVertices; i++){
-  heap[i] = NULL;
-}
-
-matAdy = new int*[cantVertices + 1];
-for(int i = 1; i <= cantVertices; i++){
-  matAdy[i] = new int[cantVertices + 1];
-  for(int j = 1; j <= cantVertices; j++){
-    matAdy[i][j] = INF;
+  heap = new Nodo*[cantVertices + 1];
+  for(int i = 1; i<= cantVertices; i++){
+    heap[i] = NULL;
   }
-}
 
-for(int i = 0; i < cantAristas; i++){
-  int vertice1;
-  int vertice2;
-  int costo;
-  cin >> vertice1 >> vertice2 >> costo;
-  matAdy[vertice1][vertice2] = costo;
-}
+  listaAdy = new NodoAdy*[cantVertices + 1];
+  for(int i = 0; i <= cantVertices; i++){
+    listaAdy[i] = NULL;
+  }
 
-int verticesConsulta;
-cin>>verticesConsulta;
+  for(int i = 0; i < cantAristas; i++){
+    int vertice1;
+    int vertice2;
+    int costo;
+    cin >> vertice1 >> vertice2 >> costo;
+        NodoAdy* nuevo = new NodoAdy;
+        nuevo->dato = vertice2;
+        nuevo->sig = listaAdy[vertice1];
+        nuevo->costo = costo;
+        listaAdy[vertice1] = nuevo;
+  }
 
-for(int i = 0; i < verticesConsulta; i++){
-  int origen;
-  cin>>origen;
-  //HAY QUE LIMPIAR EL HEAP CADA VEZ QUE LLAMAMOS A LA FUNCION
-  if(i!=0){
+  int verticesConsulta;
+  cin>>verticesConsulta;
+
+  for(int i = 0; i < verticesConsulta; i++){
+    int origen;
+    cin>>origen;
+    //HAY QUE LIMPIAR EL HEAP CADA VEZ QUE LLAMAMOS A LA FUNCION
     vaciarHeap(cantVertices);
+    caminoMasCorto(listaAdy, origen, cantVertices);
   }
-  caminoMasCorto(matAdy, origen, cantVertices);
-}
 
 }
