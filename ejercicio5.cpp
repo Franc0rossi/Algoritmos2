@@ -156,12 +156,12 @@ void caminoMasCorto(NodoAdy** listaAdy, int nodoOrigen, int cantidadDeVertices){
     while(adyacentes != NULL){
       if(!vis[adyacentes->dato]){
         if(costo[adyacentes->dato]>costo[minimo->elem] + adyacentes->costo){
-			costo[adyacentes->dato] = costo[minimo->elem] + adyacentes->costo;
-			ant[adyacentes->dato] = minimo->elem;
-			Nodo* agrego = new Nodo;
-			agrego->elem = adyacentes->dato;
-			agrego->costo = costo[minimo->elem] + adyacentes->costo;
-			add(agrego);
+			    costo[adyacentes->dato] = costo[minimo->elem] + adyacentes->costo;
+			    ant[adyacentes->dato] = minimo->elem;
+			    Nodo* agrego = new Nodo;
+			    agrego->elem = adyacentes->dato;
+			    agrego->costo = costo[minimo->elem] + adyacentes->costo;
+			    add(agrego);
         }
       }
       adyacentes = adyacentes->sig;
