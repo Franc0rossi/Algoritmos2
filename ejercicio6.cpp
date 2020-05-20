@@ -13,9 +13,6 @@ struct NodoAdy {
 	int costo;
 	NodoAdy* sig;
 };
-
-bool* verticesEnHeap;
-
 Nodo** heap;
 int tope = 0;
 
@@ -120,10 +117,7 @@ void removeMin()
 int sumaTotal(int* costo, int cantidadDeVertices){
     int suma = 0;
     for(int i = 1; i <= cantidadDeVertices; i++){
-        if(costo[i]!=INF){
-            suma += costo[i];
-        }
-        
+        suma += costo[i];
     }
     return suma;
 }
@@ -167,34 +161,6 @@ int arbolDeCubrimientoMinimo(NodoAdy** listaAdy, int nodoOrigen, int cantidadDeV
 
     return sumaTotal(costo, cantidadDeVertices);
 }
-
-	/*while (adyacentes != NULL) {
-		Nodo* agrego = new Nodo;
-		agrego->vertice = adyacentes->dato;
-		agrego->costo = adyacentes->costo;
-		add(agrego);
-		adyacentes = adyacentes->sig;
-	}
-	while (tope > 0 && cont < cantidadDeVertices - 1) {
-		Nodo* min = getMin();
-        suma = suma + min->costo;
-        cont++;
-        removeMin();
-        vis[min->vertice] = true;
-        NodoAdy* adyacentes2 = listaAdy[min->vertice];
-        while (adyacentes2 != NULL) {
-            if (!vis[adyacentes2->dato]) {
-                Nodo* agrego2 = new Nodo;
-                agrego2->vertice = adyacentes2->dato;
-                agrego2->costo = adyacentes2->costo;
-                add(agrego2);
-            }
-            adyacentes2 = adyacentes2->sig;
-        }
-    }
-	return suma;	
-}
-*/	
     
 int main(){
 
@@ -205,11 +171,8 @@ int main(){
   cin>>cantAristas;
 
   heap = new Nodo*[cantVertices + 1];
-  verticesEnHeap = new bool[cantVertices + 1];
-
   for(int i = 1; i<= cantVertices; i++){
     heap[i] = NULL;
-    verticesEnHeap[i] = false;
   }
 
   listaAdy = new NodoAdy*[cantVertices + 1];
@@ -222,11 +185,17 @@ int main(){
     int vertice2;
     int costo;
     cin >> vertice1 >> vertice2 >> costo;
+        NodoAdy* nuevo2=new NodoAdy;
         NodoAdy* nuevo = new NodoAdy;
         nuevo->dato = vertice2;
         nuevo->sig = listaAdy[vertice1];
         nuevo->costo = costo;
         listaAdy[vertice1] = nuevo;
+
+        nuevo2->dato = vertice1;
+        nuevo2->sig = listaAdy[vertice2];
+        nuevo2->costo = costo;
+        listaAdy[vertice2] = nuevo2;
   }
 
   int retorno = arbolDeCubrimientoMinimo(listaAdy, 1, cantVertices);
