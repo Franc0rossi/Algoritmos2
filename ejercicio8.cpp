@@ -20,7 +20,7 @@ bool hayCiclo(int v, bool* visitados, bool* camino, int cantElem, bool**matAdy) 
         } 
   
     } 
-    camino[v] = false;  // remove the vertex from recursion stack 
+    camino[v] = false;  
     return false; 
 }
 
