@@ -17,7 +17,6 @@ struct Tripleta{
 
 Tripleta** arrayTripletas;
 
-
 struct NodoPar{
     Par* par;
     int cantidadDeElementos;
@@ -69,28 +68,29 @@ NodoPar* merge(NodoPar* izq, NodoPar* der){
         Par nuevo;
         if(izq->par[i].first == der->par[j].first){
             //int altura = alturaMaxima(izq->par[i].second, der->par[j].second);
-            nuevo.first = izq->par[i].first;
-            nuevo.second = izq->par[i].second;
+            int posicion = izq->par[i].first;
             h1 = izq->par[i].second;
             h2 = der->par[j].second;
+            nuevo.first = posicion;
+            nuevo.second = alturaMaxima(h1,h2);
             res = add(res, nuevo);
-            i++;
             j++;
+            i++;
 
         }
         else if(izq->par[i].first < der->par[j].first){
+            int posIzq = izq->par[i].first;
             h1 = izq->par[i].second;
-            int altura = alturaMaxima(h1, der->par[j].second);
-            nuevo.first = izq->par[i].first;
-            nuevo.second = altura;
+            nuevo.first = posIzq;
+            nuevo.second = alturaMaxima(h1,h2);
             res = add(res, nuevo);
             i++;
         }
         else if(izq->par[i].first > der->par[j].first){
+            int posDer = der->par[j].first;
             h2 = der->par[j].second;
-            int altura = alturaMaxima(h2, izq->par[i].second);
-            nuevo.first = der->par[j].first;
-            nuevo.second = altura;
+            nuevo.first = posDer;
+            nuevo.second = alturaMaxima(h1,h2);
             res = add(res, nuevo);
             j++;
         }
@@ -116,30 +116,26 @@ NodoPar* obtenerContorno(Tripleta** arrayDeTripletas, int izq, int der){
         Par par1;
         par1.first = tri->inicio;
         par1.second = tri->altura;
-
         result = add(result, par1);
 
         Par par2;
         par2.first = tri->final;
         par2.second = 0;
-
         result = add(result, par2);
 
         return result;
     }
     else{
         int mitad = (izq + der) / 2;
-
         NodoPar* res1 = obtenerContorno(arrayTripletas, izq, mitad);
         NodoPar* res2 = obtenerContorno(arrayTripletas, mitad + 1, der);
-
         return merge(res1, res2);
     }
 }
 
-void imprimirSombra(NodoPar* sombra){
-    for(int i = 0; i < sombra->cantidadDeElementos; i++){
-        cout<<sombra->par[i].first<<" "<<sombra->par[i].second<<endl;
+void imprimirSombra(Par* par, int cant){
+    for(int i = 0; i < cant; i++){
+        cout<<par[i].first<<" "<<par[i].second<<endl;
     }
 }
 
@@ -149,6 +145,9 @@ int main(){
     cin>>cantidadDeSombras;
 
     arrayTripletas = new Tripleta*[cantidadDeSombras];
+    for(int i=0;i<cantidadDeSombras;i++){
+        arrayTripletas[i]=NULL;
+    }
 
     for(int i = 0; i < cantidadDeSombras; i++){
         int coordInicial;
@@ -156,14 +155,12 @@ int main(){
         int altura;
 
         cin>>coordInicial>>coordFinal>>altura;
-
         Tripleta* nueva = new Tripleta(coordInicial, coordFinal, altura);
         arrayTripletas[i] = nueva;
     }
 
     NodoPar* retorno = obtenerContorno(arrayTripletas, 0, cantidadDeSombras-1);
-
-    imprimirSombra(retorno);
+    imprimirSombra(retorno->par,retorno->cantidadDeElementos);
 
     return 0;
 }
