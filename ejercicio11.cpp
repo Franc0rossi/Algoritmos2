@@ -1,7 +1,7 @@
 #include <iostream> 
 using namespace std;
 
-void combinaciones(int n, long* actual, long* anterior){
+void combinaciones(int n, long long* actual, long long* anterior){
 
     for(int k = 0; k<=n; k++){
         if(n==k || k==0){
@@ -24,8 +24,8 @@ int main(){
     cin>>N;
     cin>>P;
 
-    long* actual = new long[N+1];
-    long* anterior = new long[N+1];
+    long long* actual = new long long[N+1];
+    long long* anterior = new long long[N+1];
 
     int nivelCalculado = -1;
 
