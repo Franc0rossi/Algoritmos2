@@ -14,8 +14,8 @@ struct NodoAdy{
     NodoAdy *sig;
 };
 
-
-Nodo **heap;
+int* hashPosHeap;
+Nodo *heap;
 int tope = 0;
 
 NodoAdy** listaAdy;
@@ -40,7 +40,7 @@ int posMinimo(int posHijoIzq, int posHijoDer){
         return posHijoIzq;
     }
     else{
-        if(heap[posHijoIzq]->costo > heap[posHijoDer]->costo){
+        if(heap[posHijoIzq].costo > heap[posHijoDer].costo){
             return posHijoDer;
         }
         else{
@@ -50,7 +50,7 @@ int posMinimo(int posHijoIzq, int posHijoDer){
 }
 
 void swapNodos(int pos1, int pos2){
-    Nodo* aux = heap[pos1];
+    Nodo aux = heap[pos1];
     heap[pos1] =  heap[pos2];
     heap[pos2] = aux;
 }
@@ -58,23 +58,46 @@ void swapNodos(int pos1, int pos2){
 void flotar(int pos){
     int posPadre = pos/2;
     if(pos > 1){
-        if(heap[pos] != NULL && heap[posPadre] != NULL){
-            if(heap[pos]->costo < heap[posPadre]->costo){
-                swapNodos(pos, posPadre);
-                flotar(posPadre);
+            if(heap[pos].costo < heap[posPadre].costo){
+              hashPosHeap[heap[pos].elem] = posPadre;
+				      hashPosHeap[heap[posPadre].elem] = pos;
+              swapNodos(pos, posPadre);
+              flotar(posPadre);
             }
-        }
-
     }
 }
 
+void add(Nodo nuevo)
+{
+		tope++;
+		heap[tope] = nuevo;
+		flotar(tope);
+}
+
+void inicializarHeap(int origen, int cantVertices){
+  heap=new Nodo[cantVertices+1];
+  for (int i = 1; i <= cantVertices; i++){
+		Nodo nuevo;
+		nuevo.elem = i;
+		if (i != origen)
+		{
+			nuevo.costo = INF;
+		}
+		else
+		{
+			nuevo.costo = 0;
+		}
+		add(nuevo);
+	}
+  
+}
 
 bool esHoja(int pos)
 {   
 	return posicionHijoIzq(pos) > tope;
 }
 
-Nodo* getMin()
+Nodo getMin()
 {
 	return heap[1];
 }
@@ -87,39 +110,22 @@ void hundir(int pos)
     int posHijoIzq = posicionHijoIzq(pos);
 		int posMinimoHijo = posMinimo(posHijoDer, posHijoIzq);
 
-		if (heap[posMinimoHijo] != NULL && heap[pos] != NULL)
-		{
-			if (heap[posMinimoHijo]->costo < heap[pos]->costo)
+			if (heap[posMinimoHijo].costo < heap[pos].costo)
 			{
+        hashPosHeap[heap[pos].elem] = posMinimoHijo;
+			  hashPosHeap[heap[posMinimoHijo].elem] = pos;
 				swapNodos(posMinimoHijo, pos);
 				hundir(posMinimoHijo);
 			}
-		}
-	}
-}
-
-void add(Nodo *nuevo)
-{
-	if (nuevo != NULL)
-	{
-		tope++;
-		heap[tope] = nuevo;
-		flotar(tope);
 	}
 }
 
 void removeMin()
 {
-	Nodo *min = heap[1];
+	Nodo min = heap[1];
 	heap[1] = heap[tope];
 	tope--;
 	hundir(1);
-}
-
-void vaciarHeap(int cantVertices){
-  for(int i = 0; i <= cantVertices; i++){
-    heap[i] = NULL;
-  }
 }
 
 void imprimirCosto(int* costo, int cantVertices){
@@ -134,6 +140,14 @@ void imprimirCosto(int* costo, int cantVertices){
   }
 }
 
+void modificarCosto(int vertice, int nuevoCosto)
+{
+	int indiceHeap = hashPosHeap[vertice];
+	heap[indiceHeap].costo = nuevoCosto;
+	hundir(indiceHeap);
+	flotar(indiceHeap);
+}
+
 void caminoMasCorto(NodoAdy** listaAdy, int nodoOrigen, int cantidadDeVertices){
   int *costo = new int[cantidadDeVertices + 1];
   int *ant = new int[cantidadDeVertices + 1];
@@ -143,25 +157,18 @@ void caminoMasCorto(NodoAdy** listaAdy, int nodoOrigen, int cantidadDeVertices){
     ant[i] = -1;
     vis[i] = false;
   }
-  costo[nodoOrigen] = 0;
-  Nodo* nuevo = new Nodo;
-  nuevo->elem = nodoOrigen;
-  nuevo->costo = 0;
-  add(nuevo);
+ costo[nodoOrigen] = 0;
   while(tope>0){
-    Nodo* minimo = getMin();
+    Nodo minimo = getMin();
     removeMin();
-    vis[minimo->elem] = true;
-    NodoAdy* adyacentes = listaAdy[minimo->elem];
+    vis[minimo.elem] = true;
+    NodoAdy* adyacentes = listaAdy[minimo.elem];
     while(adyacentes != NULL){
       if(!vis[adyacentes->dato]){
-        if(costo[adyacentes->dato]>costo[minimo->elem] + adyacentes->costo){
-			    costo[adyacentes->dato] = costo[minimo->elem] + adyacentes->costo;
-			    ant[adyacentes->dato] = minimo->elem;
-			    Nodo* agrego = new Nodo;
-			    agrego->elem = adyacentes->dato;
-			    agrego->costo = costo[minimo->elem] + adyacentes->costo;
-			    add(agrego);
+        if(costo[adyacentes->dato]>costo[minimo.elem] + adyacentes->costo){
+			    costo[adyacentes->dato] = costo[minimo.elem] + adyacentes->costo;
+			    ant[adyacentes->dato] = minimo.elem;
+			    modificarCosto(adyacentes->dato,costo[minimo.elem] + adyacentes->costo);
         }
       }
       adyacentes = adyacentes->sig;
@@ -180,9 +187,9 @@ int main(){
   int cantAristas;
   cin>>cantAristas;
 
-  heap = new Nodo*[cantVertices + 1];
-  for(int i = 1; i<= cantVertices; i++){
-    heap[i] = NULL;
+  hashPosHeap = new int[cantVertices + 1];
+  for(int i=0;i<=cantVertices;i++){
+    hashPosHeap[i]=i;
   }
 
   listaAdy = new NodoAdy*[cantVertices + 1];
@@ -209,8 +216,9 @@ int main(){
     int origen;
     cin>>origen;
     //HAY QUE LIMPIAR EL HEAP CADA VEZ QUE LLAMAMOS A LA FUNCION
-    vaciarHeap(cantVertices);
+    inicializarHeap(origen,cantVertices);
     caminoMasCorto(listaAdy, origen, cantVertices);
+    for (int j = 0; j <= cantVertices; j++)
+      hashPosHeap[j] = j;
   }
-
 }
