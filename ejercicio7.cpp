@@ -84,7 +84,7 @@ int main(){
     }
 
     int retorno = compConexas(1, cantVertices, matAdy);
-    cout << retorno << endl;
+    cout << retorno << " ";
 
     return 0;
 

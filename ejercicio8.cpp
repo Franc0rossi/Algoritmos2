@@ -59,7 +59,7 @@ int main(){
     }
 
     bool ciclo = hayCiclo(1, vis, camino, cantVertices, matAdy);
-    cout << ciclo << endl;
+    cout << ciclo << " ";
 
     return 0;
 }

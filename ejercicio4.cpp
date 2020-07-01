@@ -155,25 +155,6 @@ int main(){
             add(0,i);
         }
     }
-
-    /*
-    CORROBORAMOS VECTOR DE INCIDENCIAS
-    for(int i = 1; i<cantVertices+1; i++){
-        cout<<vecIncidentes[i]<<endl;
-    }
-    */
-
-    
-    /*CORROBORAMOS LISTA DE ADYACENTES
-    for(int i = 1; i<cantVertices; i++){
-        NodoAdy* iter = listaAdy[i];
-        while(iter!=NULL){
-            cout<<iter->dato<<endl;
-            iter = iter->sig;
-        }
-    }
-    */
-    
     while(tope!=0){
         Nodo* minimoHeap = getMin();
         removeMin();
@@ -191,43 +172,3 @@ int main(){
     
     return 0;
 }
-
-
-
-/*
-input
-10
-20
-10 2
-1 5
-7 1
-9 2
-5 6
-1 2
-2 4
-3 2
-2 6
-1 6
-7 5
-10 5
-8 7
-8 6
-10 6
-3 6
-9 4
-9 1
-5 4
-3 8
-
-output
-3
-9
-10
-8
-7
-1
-2
-5
-4
-6
-*/
