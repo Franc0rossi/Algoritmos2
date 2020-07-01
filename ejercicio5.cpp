@@ -218,6 +218,7 @@ int main(){
     //HAY QUE LIMPIAR EL HEAP CADA VEZ QUE LLAMAMOS A LA FUNCION
     inicializarHeap(origen,cantVertices);
     caminoMasCorto(listaAdy, origen, cantVertices);
+    //Reseteamos hash por posiciones
     for (int j = 0; j <= cantVertices; j++)
       hashPosHeap[j] = j;
   }
